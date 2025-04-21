@@ -22,35 +22,45 @@
   <div id="timer">00:00</div>
   <p id="notice"></p>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const total = parseInt(params.get("duration")) || 240; // default: 4 min
-    const start = Date.now();
+ <script>
+  const params = new URLSearchParams(window.location.search);
+  const total = parseInt(params.get("duration")) || 240; // default = 4 minutes
+  const start = Date.now();
+  let warned = false; // 🔸 กันแสดงซ้ำ
 
-    function update() {
-      const elapsed = Math.floor((Date.now() - start) / 1000);
-      const remaining = Math.max(0, total - elapsed);
+  function update() {
+    const elapsed = Math.floor((Date.now() - start) / 1000);
+    const remaining = Math.max(0, total - elapsed);
 
-      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
-      const s = String(remaining % 60).padStart(2, '0');
-      document.getElementById("timer").textContent = `${m}:${s}`;
+    const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+    const s = String(remaining % 60).padStart(2, '0');
+    document.getElementById("timer").textContent = `${m}:${s}`;
 
-      const noticeEl = document.getElementById("notice");
+    const noticeEl = document.getElementById("notice");
 
-      if (remaining === 60) {
-        noticeEl.textContent = "You have 1 minute left to complete your answer. Please submit as soon as possible.";
-        noticeEl.style.color = "orange";
-      } else if (remaining === 0) {
-        noticeEl.textContent = "You have exceeded the time limit. Please submit your answer.";
-        noticeEl.style.color = "red";
-      }
+    // Reset ถ้าไม่อยู่ในช่วงแจ้งเตือน
+    noticeEl.textContent = "";
+    noticeEl.style.color = "";
 
-      if (remaining > 0) {
-        requestAnimationFrame(update);
-      }
+    // ✅ แจ้งเมื่อเหลือ 60 วินาทีหรือน้อยกว่านั้น (แต่ยังไม่หมดเวลา)
+    if (remaining <= 60 && remaining > 0 && !warned) {
+      noticeEl.textContent = "You have 1 minute left to complete your answer. Please submit as soon as possible.";
+      noticeEl.style.color = "orange";
+      warned = true;
     }
 
-    update();
-  </script>
+    // ✅ หมดเวลาแล้ว
+    if (remaining === 0) {
+      noticeEl.textContent = "You have exceeded the time limit. Please submit your answer.";
+      noticeEl.style.color = "red";
+    }
+
+    if (remaining > 0) {
+      requestAnimationFrame(update);
+    }
+  }
+
+  update();
+</script>
 </body>
 </html>
