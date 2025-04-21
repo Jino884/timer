@@ -16,14 +16,30 @@
   <script>
     const total = 4 * 60;
     const start = Date.now();
+
     function update() {
       const elapsed = Math.floor((Date.now() - start) / 1000);
       const remaining = Math.max(0, total - elapsed);
+
+      // แสดงบนหน้า
       const m = String(Math.floor(remaining / 60)).padStart(2, '0');
       const s = String(remaining % 60).padStart(2, '0');
       document.getElementById("timer").textContent = `${m}:${s}`;
-      if (remaining > 0) requestAnimationFrame(update);
+
+      // ✅ ส่งเวลาเหลือกลับไปยัง Retool
+      window.parent.postMessage({
+        type: "TIMER_UPDATE",
+        remaining: remaining
+      }, "*");
+
+      if (remaining > 0) {
+        requestAnimationFrame(update);
+      } else {
+        // ✅ แจ้งว่า timer หมด
+        window.parent.postMessage({ type: "TIMER_DONE" }, "*");
+      }
     }
+
     update();
   </script>
 </body>
