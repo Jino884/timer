@@ -7,36 +7,46 @@
       font-family: Arial, sans-serif;
       font-size: 36px;
       text-align: center;
-      margin-top: 30vh;
+      margin-top: 20vh;
+    }
+    #timer {
+      margin-bottom: 20px;
+    }
+    #notice {
+      font-size: 20px;
+      transition: color 0.3s ease;
     }
   </style>
 </head>
 <body>
-  <div id="timer">04:00</div>
+  <div id="timer">00:00</div>
+  <p id="notice"></p>
+
   <script>
-    const total = 4 * 60;
+    const params = new URLSearchParams(window.location.search);
+    const total = parseInt(params.get("duration")) || 240; // default: 4 min
     const start = Date.now();
 
     function update() {
       const elapsed = Math.floor((Date.now() - start) / 1000);
       const remaining = Math.max(0, total - elapsed);
 
-      // แสดงบนหน้า
       const m = String(Math.floor(remaining / 60)).padStart(2, '0');
       const s = String(remaining % 60).padStart(2, '0');
       document.getElementById("timer").textContent = `${m}:${s}`;
 
-      // ✅ ส่งเวลาเหลือกลับไปยัง Retool
-      window.parent.postMessage({
-        type: "TIMER_UPDATE",
-        remaining: remaining
-      }, "*");
+      const noticeEl = document.getElementById("notice");
+
+      if (remaining === 60) {
+        noticeEl.textContent = "You have 1 minute left to complete your answer. Please submit as soon as possible.";
+        noticeEl.style.color = "orange";
+      } else if (remaining === 0) {
+        noticeEl.textContent = "You have exceeded the time limit. Please submit your answer.";
+        noticeEl.style.color = "red";
+      }
 
       if (remaining > 0) {
         requestAnimationFrame(update);
-      } else {
-        // ✅ แจ้งว่า timer หมด
-        window.parent.postMessage({ type: "TIMER_DONE" }, "*");
       }
     }
 
