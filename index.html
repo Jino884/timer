@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 36px;
+      text-align: center;
+      margin-top: 30vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="timer">04:00</div>
+  <script>
+    const total = 4 * 60;
+    const start = Date.now();
+    function update() {
+      const elapsed = Math.floor((Date.now() - start) / 1000);
+      const remaining = Math.max(0, total - elapsed);
+      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const s = String(remaining % 60).padStart(2, '0');
+      document.getElementById("timer").textContent = `${m}:${s}`;
+      if (remaining > 0) requestAnimationFrame(update);
+    }
+    update();
+  </script>
+</body>
+</html>
