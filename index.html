@@ -70,13 +70,13 @@
       }
 
       if (remaining <= 60 && remaining > 0 && !warned) {
-        noticeEl.innerHTML = `You have 1 minute left to complete your answer.<br>Please submit as soon as possible.`;
+        noticeEl.innerHTML = `You have 1 minute left to complete your answer.Please submit as soon as possible.`;
         noticeEl.style.color = "orange";
         warned = true;
       }
 
       if (remaining === 0) {
-        noticeEl.innerHTML = `You have exceeded the time limit.<br>Please submit your answer.`;
+        noticeEl.innerHTML = `You have exceeded the time limit.Please submit your answer.`;
         noticeEl.style.color = "red";
       }
 
