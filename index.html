@@ -2,87 +2,90 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-<style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 18px;
-    margin: 0;
-    padding: 0;
-    background: transparent;
-  }
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 18px;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+    }
 
-  #timer-box {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background-color: #1a1a1a;
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    text-align: center;
-    min-width: 180px;
-  }
+    #timer-box {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      color: #000;
+      padding: 0;
+      border-radius: 0;
+      text-align: center;
+      width: 220px;
+      height: 90px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: transparent;
+      box-shadow: none;
+    }
 
-  #timer {
-    font-size: 24px;
-    font-weight: bold;
-  }
+    #timer {
+      font-size: 24px;
+      font-weight: bold;
+    }
 
-  #notice {
-    font-size: 14px;
-    margin-top: 8px;
-    transition: color 0.3s ease;
-  }
-</style>
-
+    #notice {
+      font-size: 13px;
+      margin-top: 6px;
+      transition: color 0.3s ease;
+      line-height: 1.3;
+    }
+  </style>
 </head>
 <body>
   <div id="timer-box">
     <div id="timer">00:00</div>
-    <p id="notice"></p>
+    <div id="notice"></div>
   </div>
 
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const total = parseInt(params.get("duration")) || 240;
-  const start = Date.now();
-  let warned = false;
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const total = parseInt(params.get("duration")) || 240;
+    const start = Date.now();
+    let warned = false;
 
-  function update() {
-    const elapsed = Math.floor((Date.now() - start) / 1000);
-    const remaining = Math.max(0, total - elapsed);
+    function update() {
+      const elapsed = Math.floor((Date.now() - start) / 1000);
+      const remaining = Math.max(0, total - elapsed);
 
-    const m = String(Math.floor(remaining / 60)).padStart(2, '0');
-    const s = String(remaining % 60).padStart(2, '0');
-    document.getElementById("timer").textContent = `${m}:${s}`;
+      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const s = String(remaining % 60).padStart(2, '0');
+      document.getElementById("timer").textContent = `${m}:${s}`;
 
-    const noticeEl = document.getElementById("notice");
+      const noticeEl = document.getElementById("notice");
 
-    // ✅ ล้างเฉพาะตอนยังไม่ถึงช่วงเตือน
-    if (!warned && remaining > 60) {
-      noticeEl.textContent = "";
-      noticeEl.style.color = "";
+      if (!warned && remaining > 60) {
+        noticeEl.innerHTML = "";
+        noticeEl.style.color = "";
+      }
+
+      if (remaining <= 60 && remaining > 0 && !warned) {
+        noticeEl.innerHTML = `You have 1 minute left to complete your answer.<br>Please submit as soon as possible.`;
+        noticeEl.style.color = "orange";
+        warned = true;
+      }
+
+      if (remaining === 0) {
+        noticeEl.innerHTML = `You have exceeded the time limit.<br>Please submit your answer.`;
+        noticeEl.style.color = "red";
+      }
+
+      if (remaining > 0) {
+        requestAnimationFrame(update);
+      }
     }
 
-    if (remaining <= 60 && remaining > 0 && !warned) {
-      noticeEl.textContent = "You have 1 minute left to complete your answer. Please submit as soon as possible.";
-      noticeEl.style.color = "orange";
-      warned = true;
-    }
-
-    if (remaining === 0) {
-      noticeEl.textContent = "You have exceeded the time limit. Please submit your answer.";
-      noticeEl.style.color = "red";
-    }
-
-    if (remaining > 0) {
-      requestAnimationFrame(update);
-    }
-  }
-
-  update();
-</script>
-
+    update();
+  </script>
 </body>
 </html>
