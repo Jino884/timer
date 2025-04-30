@@ -49,8 +49,20 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const total = parseInt(params.get("duration")) || 240;
+    const language = params.get("language") || "en"; // Default to English
     const start = Date.now();
     let warned = false;
+
+    const messages = {
+      en: {
+        oneMinute: "You have 1 minute left. Please submit as soon as possible.",
+        timeout: "You have exceeded the time limit. Please submit your answer."
+      },
+      th: {
+        oneMinute: "คุณเหลือเวลาอีก 1 นาที กรุณาส่งคำตอบโดยเร็วที่สุด",
+        timeout: "คุณใช้เวลาเกินกำหนด กรุณาส่งคำตอบของคุณทันที ขอบคุณค่ะ"
+      }
+    };
 
     function update() {
       const elapsed = Math.floor((Date.now() - start) / 1000);
@@ -68,13 +80,13 @@
       }
 
       if (remaining <= 60 && remaining > 0 && !warned) {
-        noticeEl.textContent = "You have 1 minute left. Please submit as soon as possible.";
+        noticeEl.textContent = messages[language].oneMinute;
         noticeEl.style.color = "orange";
         warned = true;
       }
 
       if (remaining === 0) {
-        noticeEl.textContent = "You have exceeded the time limit. Please submit your answer.";
+        noticeEl.textContent = messages[language].timeout;
         noticeEl.style.color = "red";
       }
 
